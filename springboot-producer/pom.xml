@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <groupId>com.wdaking</groupId>
+    <artifactId>springboot-producer</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>springboot-producer</name>
+    <description>Demo project for Spring Boot</description>
+
+    <parent>
+        <artifactId>springboot-rabbitmq</artifactId>
+        <groupId>com.wdaking</groupId>
+        <version>0.0.1-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+
+    <build>
+        <finalName>springboot-producer</finalName>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.wdaking</groupId>
+            <artifactId>springboot-model</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
+</project>
