@@ -130,4 +130,3 @@ CREATE TABLE `activity_over_msg` (
 2. run ConsumerApplication 来开启消费者服务
 3. run ProducerApplication 来开启生产者服务
 4. run SpringbootProducerApplicationTests 中的testSend方法来发送消息进行测试
-## 代码实例及学习参考内容来自慕课网课程[RabbitMQ消息中间件极速入门与实战](https://www.imooc.com/learn/1042)
