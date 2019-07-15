@@ -6,8 +6,6 @@ spring:
     virtual-host: /
     publisher-confirms: true
     publisher-returns: true
-    activityqueue: activity-quene
-    activityexchange: activity-change
     template:
       mandatory: true
   datasource:
@@ -22,7 +20,7 @@ server:
     context-path: /
 mybatis:
   type-aliases-package: com.sxw.springbootproducer
-  mapper-locations: classpath:com/sxw/springbootproducer/mapping/*.xml
+  mapper-locations: classpath:/mapping/*Mapper.xml
 logging:
   level:
     tk:

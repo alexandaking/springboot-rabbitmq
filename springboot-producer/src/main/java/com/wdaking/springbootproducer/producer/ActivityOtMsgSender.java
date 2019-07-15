@@ -1,8 +1,10 @@
 package com.wdaking.springbootproducer.producer;
 
 import com.alibaba.fastjson.JSONObject;
+import com.wdaking.common.constants.Constants;
 import com.wdaking.common.constants.RabbitConstants;
-import com.wdaking.entity.ActivityOverMsg;
+import com.wdaking.entity.ActivityOtMsg;
+import com.wdaking.springbootproducer.mapper.BrokerMessageLogMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -10,43 +12,54 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Date;
+
 /**
  * @Version 1.0
  * @Author: wangjian
  * @Date: 2019-07-12 17:58
- * Copyright 本内容仅限于杭州阿拉丁信息科技股份有限公司内部传阅，禁止外泄以及用于其他的商业目的
  */
 @Component
-public class ActivityMsgSender {
+public class ActivityOtMsgSender {
 
-    private final static Logger logger = LoggerFactory.getLogger(ActivityMsgSender.class);
+    private final static Logger logger = LoggerFactory.getLogger(ActivityOtMsgSender.class);
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    //todo ： 重写confirnCallback方法
+    @Autowired
+    private BrokerMessageLogMapper brokerMessageLogMapper;
+
     final RabbitTemplate.ConfirmCallback confirmCallback = new RabbitTemplate.ConfirmCallback() {
         @Override
         public void confirm(CorrelationData correlationData, boolean ack, String cause) {
             logger.info("ConfirmCallback get correlationData : [{}]", JSONObject.toJSONString(correlationData));
             String messageId = correlationData.getId();
             if (ack){
-                //todo: 修改数据库中消息的状态
+                //如果confirm返回成功 则进行更新
+                brokerMessageLogMapper.changeBrokerMessageLogStatus(messageId, Constants.ORDER_SEND_SUCCESS, new Date());
             }else {
                 logger.error("msg confirm error, error reason : {}", cause);
             }
         }
     };
 
-
-    public void sendOrder(ActivityOverMsg activityOverMsg) throws Exception{
+    /**
+     * 发送活动消息对象实体类
+     * @param activityOtMsg @see ActivityOtMsg
+     * @throws Exception e
+     */
+    public void sendActivityOtMsg(ActivityOtMsg activityOtMsg, long ttl) throws Exception{
 
         rabbitTemplate.setConfirmCallback(confirmCallback);
 
         // 消息唯一ID
-        CorrelationData correlationData = new CorrelationData(activityOverMsg.getMessageId());
+        CorrelationData correlationData = new CorrelationData(activityOtMsg.getMessageId());
         rabbitTemplate.convertAndSend(RabbitConstants.ACTIVITY_EXCHANGE,
-                String.format(RabbitConstants.ROUTING_KEY, ""),
-                activityOverMsg, correlationData);
+                String.format(RabbitConstants.ROUTING_KEY, "normal"),
+                activityOtMsg,message -> {
+            message.getMessageProperties().setHeader("x-delay", ttl);
+            return message;
+            }, correlationData);
     }
 }
