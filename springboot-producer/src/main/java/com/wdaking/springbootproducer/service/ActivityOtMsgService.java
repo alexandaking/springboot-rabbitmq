@@ -35,7 +35,7 @@ public class ActivityOtMsgService {
     private ActivityOtMsgSender activityOtMsgSender;
 
     @Transactional(rollbackFor = Exception.class)
-    public void creatActivityOtMsg(ActivityOtMsg activityOtMsg) {
+    public void creatActivityOtMsg(ActivityOtMsg activityOtMsg, Long ttl) {
         // 插入业务数据
         activityOtMsgMapper.insert(activityOtMsg);
         // 插入消息记录表数据
@@ -52,7 +52,7 @@ public class ActivityOtMsgService {
         brokerMessageLog.setUpdateTime(new Date());
         brokerMessageLogMapper.insertSelective(brokerMessageLog);
         try {
-            sendMsg(activityOtMsg, 10000L);
+            sendMsg(activityOtMsg, ttl);
         } catch (Exception e) {
             logger.error("activityOtMsg send message fail, error info:[{}], activity ot message:[{}], timestamp:[{}]",
                     e,

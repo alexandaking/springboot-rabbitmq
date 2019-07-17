@@ -26,11 +26,15 @@ public class ProducerApplicationTest {
 
     @Test
     public void testSender() throws Exception {
-        ActivityOtMsg activityOtMsg = new ActivityOtMsg();
-        activityOtMsg.setId(1);
-        activityOtMsg.setActivityName("第一个消息");
-        activityOtMsg.setActivityOverTime(DateUtils.addMinutes(new Date(), 2));
-        activityOtMsg.setMessageId(System.currentTimeMillis()+"$"+ UUID.randomUUID().toString());
-        activityOtMsgService.creatActivityOtMsg(activityOtMsg);
+        long ttl = 2000L;
+        for (int i=0; i<10; i++){
+            ttl+=2000L;
+            ActivityOtMsg activityOtMsg = new ActivityOtMsg();
+            activityOtMsg.setId(1+i);
+            activityOtMsg.setActivityName((50000L-ttl) +"ms消息");
+            activityOtMsg.setActivityOverTime(DateUtils.addMinutes(new Date(), 2));
+            activityOtMsg.setMessageId(System.currentTimeMillis()+"$"+ UUID.randomUUID().toString());
+            activityOtMsgService.creatActivityOtMsg(activityOtMsg, 50000L-ttl);
+        }
     }
 }
